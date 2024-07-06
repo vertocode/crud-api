@@ -16,6 +16,14 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    activeToken: {
+        type: String,
+        default: null
+    },
+    activeTokenExpires: {
+        type: Date,
+        default: null
     }
 })
 

@@ -3,7 +3,9 @@ import express, { Response } from 'express'
 import cors from 'cors'
 import { auth, createUser, getUsers } from './services/user'
 import * as mongoose from "mongoose"
+import { uuid } from 'uuidv4'
 import dotenv from 'dotenv'
+import {User} from "./types/User";
 
 dotenv.config()
 
@@ -23,11 +25,7 @@ app.get('/auth', async (req, res: Response): Promise<void> => {
         }
 
         const response = await auth(req.body)
-        if (response.length) {
-            res.status(200).send(response)
-        } else {
-            res.status(404).send({ error: 'User not found' })
-        }
+        res.status(200).send(response)
     } catch (error) {
         console.error(`Error logging in: ${error}`)
         res.status(500).send({ error })

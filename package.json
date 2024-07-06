@@ -27,7 +27,8 @@
     "nodemon": "^3.0.1",
     "rimraf": "^5.0.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "uuidv4": "^6.2.13"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
