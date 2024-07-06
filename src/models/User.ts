@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema({
     },
     activeToken: {
         type: String,
-        default: null
+        default: null,
+        expireAfterSeconds: 86400
     },
     activeTokenExpires: {
         type: Date,

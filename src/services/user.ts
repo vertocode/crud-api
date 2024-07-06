@@ -28,7 +28,8 @@ export async function auth(data: AuthParams): Promise<UserType | { error: string
             email,
             password,
             createdAt,
-            token: generateToken()
+            activeToken: generateToken(),
+            activeTokenExpires: new Date(Date.now() + 86400000)
         }
     } else {
         return { error: 'User not found' }

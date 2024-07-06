@@ -4,7 +4,8 @@ export interface User {
     email: string
     password: string
     createdAt: Date
-    token: string
+    activeToken: string
+    activeTokenExpires: Date
 }
 
 export interface AuthParams {
