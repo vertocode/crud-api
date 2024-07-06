@@ -1,7 +1,7 @@
 import type { Express } from 'express'
 import express, { Response } from 'express'
 import cors from 'cors'
-import { createUser, getUsers } from './services/user'
+import { auth, createUser, getUsers } from './services/user'
 import * as mongoose from "mongoose"
 import dotenv from 'dotenv'
 
@@ -14,6 +14,24 @@ app.use(express.json())
 
 app.get('/', (_, res: Response): void => {
     res.send({ status: 'OK' })
+})
+
+app.get('/auth', async (req, res: Response): Promise<void> => {
+    try {
+        if (!req.body.email || !req.body.password) {
+            throw new Error('Invalid body, email and password are required.')
+        }
+
+        const response = await auth(req.body)
+        if (response.length) {
+            res.status(200).send(response)
+        } else {
+            res.status(404).send({ error: 'User not found' })
+        }
+    } catch (error) {
+        console.error(`Error logging in: ${error}`)
+        res.status(500).send({ error })
+    }
 })
 
 app.get('/users', async (_, res: Response): Promise<void> => {
