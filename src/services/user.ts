@@ -14,7 +14,8 @@ function generateToken() {
     return uuid()
 }
 
-export async function auth(data: AuthParams): Promise<UserType | { error: string }> {
+type ErrorCodes = 'user_not_found'
+export async function auth(data: AuthParams): Promise<UserType | { errorMessage: string, errorCode: ErrorCodes }> {
     const filters = {
         email: { $eq: data.email },
         password: { $eq: data.password }
@@ -32,6 +33,6 @@ export async function auth(data: AuthParams): Promise<UserType | { error: string
             activeTokenExpires: new Date(Date.now() + 86400000)
         }
     } else {
-        return { error: 'User not found' }
+        return { errorMessage: 'User not found', errorCode: 'user_not_found' }
     }
 }

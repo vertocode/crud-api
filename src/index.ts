@@ -18,13 +18,17 @@ app.get('/', (_, res: Response): void => {
     res.send({ status: 'OK' })
 })
 
-app.get('/auth', async (req, res: Response): Promise<void> => {
+app.get('/auth/login', async (req, res: Response): Promise<void> => {
     try {
-        if (!req.body.email || !req.body.password) {
+        const { email, password } = req.query
+        if (!email || !password) {
             throw new Error('Invalid body, email and password are required.')
         }
 
-        const response = await auth(req.body)
+        const response = await auth({
+            email: email as string,
+            password: password as string
+        })
         res.status(200).send(response)
     } catch (error) {
         console.error(`Error logging in: ${error}`)
