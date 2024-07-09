@@ -6,6 +6,10 @@ export async function getUsers() {
     return User.find()
 }
 
+export async function checkUserExists(email: string) {
+    return User.find({ email })
+}
+
 export async function createUser(data: UserType) {
     return User.create(data)
 }

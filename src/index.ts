@@ -1,11 +1,9 @@
 import type { Express } from 'express'
 import express, { Response } from 'express'
 import cors from 'cors'
-import { auth, createUser, getUsers } from './services/user'
+import {auth, checkUserExists, createUser, getUsers} from './services/user'
 import * as mongoose from "mongoose"
-import { uuid } from 'uuidv4'
 import dotenv from 'dotenv'
-import {User} from "./types/User";
 
 dotenv.config()
 
@@ -51,12 +49,17 @@ app.post('/users', async (req, res: Response): Promise<void> => {
         if (!req.body.name || !req.body.email || !req.body.password) {
             throw new Error('Invalid body, name, email and password are required.')
         }
+        const userAlreadyExists = await checkUserExists(req.body.email)
+        if (userAlreadyExists && userAlreadyExists.length) {
+            res.status(400).send({ error: 'User already exists.', errorCode: 'user_already_exists' })
+            return
+        }
         const response = await createUser(req.body)
         console.log(`User created successfully: ${response.name} | ${response?._id}`)
         res.status(201).send(response)
     } catch (error) {
         console.error(`Error creating user: ${error}`)
-        res.status(400).send({ error })
+        res.status(400).send({ error, errorCode: 'unexpected_error' })
     }
 })
 
