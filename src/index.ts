@@ -4,6 +4,7 @@ import cors from 'cors'
 import {auth, checkUserExists, createUser, getUsers} from './services/user'
 import * as mongoose from "mongoose"
 import dotenv from 'dotenv'
+import {createCrud} from "./services/crud";
 
 dotenv.config()
 
@@ -51,7 +52,7 @@ app.post('/users', async (req, res: Response): Promise<void> => {
         }
         const userAlreadyExists = await checkUserExists(req.body.email)
         if (userAlreadyExists && userAlreadyExists.length) {
-            res.status(400).send({ error: 'User already exists.', errorCode: 'user_already_exists' })
+            res.status(200).send({ error: 'User already exists.', errorCode: 'user_already_exists' })
             return
         }
         const response = await createUser(req.body)
@@ -61,6 +62,21 @@ app.post('/users', async (req, res: Response): Promise<void> => {
         console.error(`Error creating user: ${error}`)
         res.status(400).send({ error, errorCode: 'unexpected_error' })
     }
+})
+
+app.post('/cruds', async (req, res: Response): Promise<void> => {
+  try {
+      console.log('req.body >>>', req.body)
+      if (!req.body?.name || !req.body?.fields) {
+          throw new Error('Invalid body, name and fields are required.')
+      }
+      const response = await createCrud(req.body)
+      console.log(`Crud created successfully: ${response.name} | ${response?._id}`)
+      res.status(201).send(response)
+  } catch (error) {
+        console.error(`Error creating crud: ${error}`)
+        res.status(400).send({ error, errorCode: 'unexpected_error' })
+  }
 })
 
 const mongoUsername = process.env.MONGO_USERNAME
