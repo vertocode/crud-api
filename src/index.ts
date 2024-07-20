@@ -30,8 +30,9 @@ app.get('/auth/login', async (req, res: Response): Promise<void> => {
         })
         res.status(200).send(response)
     } catch (error) {
-        console.error(`Error logging in: ${error}`)
-        res.status(500).send({ error })
+        const errorMessage = `Error logging in: ${error}`
+        console.error(errorMessage)
+        res.status(500).send({ error: errorMessage })
     }
 })
 
@@ -40,8 +41,8 @@ app.get('/users', async (_, res: Response): Promise<void> => {
         const response = await getUsers()
         res.status(200).send(response)
     } catch (error) {
-        console.error(`Error getting users: ${error}`)
-        res.status(500).send({ error })
+        const errorMessage = `Error getting users: ${error}`
+        res.status(500).send({ error: errorMessage })
     }
 })
 
@@ -59,8 +60,9 @@ app.post('/users', async (req, res: Response): Promise<void> => {
         console.log(`User created successfully: ${response.name} | ${response?._id}`)
         res.status(201).send(response)
     } catch (error) {
-        console.error(`Error creating user: ${error}`)
-        res.status(400).send({ error, errorCode: 'unexpected_error' })
+        const errorMessage = `Error creating user: ${error}`
+        console.error(errorMessage)
+        res.status(400).send({ error: errorMessage, errorCode: 'unexpected_error' })
     }
 })
 
@@ -73,21 +75,23 @@ app.post('/cruds', async (req, res: Response): Promise<void> => {
       console.log(`Crud created successfully: ${response.name} | ${response?._id}`)
       res.status(201).send(response)
   } catch (error) {
-        console.error(`Error creating crud: ${error}`)
-        res.status(400).send({ error, errorCode: 'unexpected_error' })
+        const errorMessage = `Error creating crud: ${error}`
+        res.status(400).send({ error: errorMessage, errorCode: 'unexpected_error' })
   }
 })
 
 app.get('/cruds', async (req, res: Response): Promise<void> => {
     try {
-        if (!req.body?.email) {
+        const { email } = req.query
+        if (!email) {
             throw new Error('Invalid body, email is required.')
         }
-        const response = await getCrudList(req.body.email)
+        const response = await getCrudList(email as string)
         res.status(200).send(response)
     } catch (error) {
-        console.error(`Error getting cruds by user email: ${error}`)
-        res.status(500).send({ error })
+        const errorMessage = `Error getting cruds by user email: ${error}`
+        console.error(errorMessage)
+        res.status(500).send({ error: errorMessage })
     }
 })
 
