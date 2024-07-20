@@ -4,7 +4,7 @@ import cors from 'cors'
 import {auth, checkUserExists, createUser, getUsers} from './services/user'
 import * as mongoose from "mongoose"
 import dotenv from 'dotenv'
-import {createCrud} from "./services/crud";
+import {createCrud, getCrudList} from "./services/crud";
 
 dotenv.config()
 
@@ -66,7 +66,6 @@ app.post('/users', async (req, res: Response): Promise<void> => {
 
 app.post('/cruds', async (req, res: Response): Promise<void> => {
   try {
-      console.log('req.body >>>', req.body)
       if (!req.body?.name || !req.body?.fields) {
           throw new Error('Invalid body, name and fields are required.')
       }
@@ -77,6 +76,19 @@ app.post('/cruds', async (req, res: Response): Promise<void> => {
         console.error(`Error creating crud: ${error}`)
         res.status(400).send({ error, errorCode: 'unexpected_error' })
   }
+})
+
+app.get('/cruds', async (req, res: Response): Promise<void> => {
+    try {
+        if (!req.body?.email) {
+            throw new Error('Invalid body, email is required.')
+        }
+        const response = await getCrudList(req.body.email)
+        res.status(200).send(response)
+    } catch (error) {
+        console.error(`Error getting cruds by user email: ${error}`)
+        res.status(500).send({ error })
+    }
 })
 
 const mongoUsername = process.env.MONGO_USERNAME
