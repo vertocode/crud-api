@@ -19,4 +19,4 @@ const crudItemsSchema = new mongoose.Schema({
     }
 })
 
-export default mongoose.model('Crud', crudItemsSchema)
+export default mongoose.model('CrudItem', crudItemsSchema)

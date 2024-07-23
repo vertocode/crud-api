@@ -4,7 +4,7 @@ import cors from 'cors'
 import {auth, checkUserExists, createUser, getUsers} from './services/user'
 import * as mongoose from "mongoose"
 import dotenv from 'dotenv'
-import {createCrud, getCrudList} from "./services/crud";
+import {createCrud, getCrudItemList, getCrudList} from "./services/crud";
 
 dotenv.config()
 
@@ -90,6 +90,26 @@ app.get('/cruds', async (req, res: Response): Promise<void> => {
         res.status(200).send(response)
     } catch (error) {
         const errorMessage = `Error getting cruds by user email: ${error}`
+        console.error(errorMessage)
+        res.status(500).send({ error: errorMessage })
+    }
+})
+
+app.get('/crud/:crudId/list', async (req, res: Response): Promise<void> => {
+    try {
+        const { crudId } = req.params
+        const { search } = req.query
+        if (!crudId) {
+            throw new Error('Invalid body, id is required.')
+        }
+        const response = await getCrudItemList(crudId, {
+            search: search as string,
+            page: 1,
+            pageSize: 10
+        })
+        res.status(200).send(response)
+    } catch (error) {
+        const errorMessage = `Error getting crud item list by id: ${error}`
         console.error(errorMessage)
         res.status(500).send({ error: errorMessage })
     }
