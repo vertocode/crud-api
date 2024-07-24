@@ -1,6 +1,7 @@
 import {Crud as CrudType} from "../types/Crud";
 import Crud from "../models/Crud";
 import CrudItems from "../models/CrudItems";
+import {CrudItemField} from "../types/CrudItem";
 
 export async function createCrud(data: CrudType) {
     return Crud.create(data)
@@ -37,6 +38,22 @@ export async function getCrudItemList(crudId: string, options?: GetCrudItemOptio
 
     return {
         items,
-        name: crudObject?.name
+        name: crudObject?.name,
+        fields: crudObject?.fields
     }
+}
+
+interface CrudItemData {
+    crudId: string
+    fields: CrudItemField[]
+}
+
+export async function createCrudItem(data: CrudItemData) {
+    data.fields.forEach(field => {
+        if (field.required && !field?.value) {
+            throw new Error(`Field ${field.label} is required`)
+        }
+    })
+
+    return CrudItems.create(data)
 }

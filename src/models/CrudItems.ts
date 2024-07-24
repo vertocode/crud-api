@@ -11,7 +11,7 @@ const crudItemsSchema = new mongoose.Schema({
     },
     creatorUserEmail: {
         type: String,
-        required: true
+        default: ''
     },
     createdAt: {
         type: Date,

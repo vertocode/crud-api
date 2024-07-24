@@ -4,7 +4,7 @@ import cors from 'cors'
 import {auth, checkUserExists, createUser, getUsers} from './services/user'
 import * as mongoose from "mongoose"
 import dotenv from 'dotenv'
-import {createCrud, getCrudItemList, getCrudList} from "./services/crud";
+import {createCrud, createCrudItem, getCrudItemList, getCrudList} from "./services/crud";
 
 dotenv.config()
 
@@ -110,6 +110,28 @@ app.get('/crud/:crudId/list', async (req, res: Response): Promise<void> => {
         res.status(200).send(response)
     } catch (error) {
         const errorMessage = `Error getting crud item list by id: ${error}`
+        console.error(errorMessage)
+        res.status(500).send({ error: errorMessage })
+    }
+})
+
+app.post('/crud/:crudId/item', async (req, res: Response): Promise<void> => {
+    try {
+        const { crudId } = req.params
+        const { fields } = req.body
+        if (!crudId || !fields) {
+            throw new Error('Invalid body, id and fields is required.')
+        }
+        if (!fields?.length) {
+            throw new Error('Invalid body, fields must be an array with at least 1 item.')
+        }
+        const response = await createCrudItem({
+            crudId,
+            fields
+        })
+        res.status(200).send(response)
+    } catch (error) {
+        const errorMessage = `Error creating crud item: ${error}`
         console.error(errorMessage)
         res.status(500).send({ error: errorMessage })
     }

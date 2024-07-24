@@ -5,7 +5,7 @@ export interface Crud {
     usersWithAccess: CrudUserAccess[]
 }
 
-interface CrudField {
+export interface CrudField {
     label: string
     type: FieldType
     required: boolean
