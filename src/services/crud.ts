@@ -7,6 +7,10 @@ export async function createCrud(data: CrudType) {
     return Crud.create(data)
 }
 
+export async function getCrudById(crudId: string) {
+    return Crud.findById(crudId)
+}
+
 export async function getCrudList(userEmail: string) {
     return Crud.find({ creatorUserEmail: userEmail })
 }
