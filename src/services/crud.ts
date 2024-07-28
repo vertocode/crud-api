@@ -47,17 +47,40 @@ export async function getCrudItemList(crudId: string, options?: GetCrudItemOptio
     }
 }
 
+interface CrudItemAddition {
+    label: string
+    value: string | number | boolean
+}
+
 interface CrudItemData {
     crudId: string
-    fields: CrudItemField[]
+    fields: CrudItemAddition[]
 }
 
 export async function createCrudItem(data: CrudItemData) {
+    const crudData = await getCrudById(data.crudId)
+
     data.fields.forEach(field => {
-        if (field.required && !field?.value) {
+        const crudField = crudData?.fields.find(f => f.label === field.label)
+        if (crudData && !crudField) {
+            throw new Error(`Field ${field.label} not found in crud`)
+        }
+
+        if (crudField.required && !field?.value) {
             throw new Error(`Field ${field.label} is required`)
         }
     })
 
-    return CrudItems.create(data)
+    const fields = crudData?.fields.map(field => {
+        const value = data.fields.find(f => f.label === field.label)?.value
+        return {
+            label: field.label,
+            type: field.type,
+            required: field.required,
+            options: field.options,
+            value
+        } as CrudItemField
+    })
+
+    return CrudItems.create({ ...data, fields })
 }
