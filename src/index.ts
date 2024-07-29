@@ -4,7 +4,8 @@ import cors from 'cors'
 import {auth, checkUserExists, createUser, getUsers} from './services/user'
 import * as mongoose from "mongoose"
 import dotenv from 'dotenv'
-import {createCrud, createCrudItem, getCrudById, getCrudItemList, getCrudList} from "./services/crud";
+import {createCrud, createCrudItem, getCrudById, getCrudItemList, getCrudList, updateCrudItem} from "./services/crud";
+import {Logger} from "concurrently";
 
 dotenv.config()
 
@@ -151,6 +152,30 @@ app.post('/crud/:crudId/item', async (req, res: Response): Promise<void> => {
         console.error(errorMessage)
         res.status(500).send({ error: errorMessage })
     }
+})
+
+app.put('/crud/:crudId/item/:itemId', async (req, res: Response): Promise<void> => {
+  try {
+      const { crudId, itemId } = req.params
+      const { item } = req.body || {}
+      if (!crudId || !itemId) {
+          throw new Error('Invalid body, crudId and itemId is required.')
+      }
+      if (!item) {
+          throw new Error('Invalid body, item is required.')
+      }
+      const response = await updateCrudItem({
+          crudId,
+          itemId,
+          fieldData: item
+      })
+      res.status(200).send(response)
+
+  } catch (error) {
+      const errorMessage = `Error updating crud item: ${error}`
+      console.error(errorMessage)
+      res.status(500).send({ error: errorMessage })
+  }
 })
 
 const mongoUsername = process.env.MONGO_USERNAME

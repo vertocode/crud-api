@@ -84,3 +84,39 @@ export async function createCrudItem(data: CrudItemData) {
 
     return CrudItems.create({ ...data, fields })
 }
+
+interface EditCrudItemData {
+    crudId: string
+    itemId: string
+    fieldData: {
+        label: string
+        value: string | number | boolean
+        required?: boolean
+        options?: any[]
+    }
+}
+
+export async function updateCrudItem(params: EditCrudItemData) {
+    const { crudId, itemId, fieldData } = params
+
+    const crudData = await getCrudById(crudId)
+    if (!crudData) {
+        throw new Error(`CRUD with id ${crudId} not found`)
+    }
+
+    const item = await CrudItems.findById(itemId)
+    if (!item) {
+        throw new Error(`Item with id ${itemId} not found`)
+    }
+
+    return item.updateOne({
+        $set: {
+            fields: item.fields.map((field: any) => {
+                if (field.label === fieldData.label) {
+                    field.value = fieldData.value
+                }
+                return field
+            })
+        }
+    })
+}
