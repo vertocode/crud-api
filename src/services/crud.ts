@@ -47,6 +47,17 @@ export async function getCrudItemList(crudId: string, options?: GetCrudItemOptio
     }
 }
 
+export async function getCrudItem(params: { itemId: string }) {
+    const { itemId } = params
+
+    const item = await CrudItems.findById(itemId)
+    if (!item) {
+        throw new Error(`Item with id ${itemId} not found`)
+    }
+
+    return item
+}
+
 interface CrudItemAddition {
     label: string
     value: string | number | boolean

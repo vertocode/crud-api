@@ -4,7 +4,15 @@ import cors from 'cors'
 import {auth, checkUserExists, createUser, getUsers} from './services/user'
 import * as mongoose from "mongoose"
 import dotenv from 'dotenv'
-import {createCrud, createCrudItem, getCrudById, getCrudItemList, getCrudList, updateCrudItem} from "./services/crud";
+import {
+    createCrud,
+    createCrudItem,
+    getCrudById,
+    getCrudItem,
+    getCrudItemList,
+    getCrudList,
+    updateCrudItem
+} from "./services/crud";
 import {Logger} from "concurrently";
 
 dotenv.config()
@@ -127,6 +135,21 @@ app.get('/crud/:crudId/list', async (req, res: Response): Promise<void> => {
         res.status(200).send(response)
     } catch (error) {
         const errorMessage = `Error getting crud item list by id: ${error}`
+        console.error(errorMessage)
+        res.status(500).send({ error: errorMessage })
+    }
+})
+
+app.get('/crud/item/:itemId', async (req, res: Response): Promise<void> => {
+    try {
+      const { itemId } = req.params
+        if(!itemId) {
+            throw new Error('Invalid body, itemId is required.')
+        }
+        const response = await getCrudItem({itemId})
+        res.status(200).send(response)
+    }  catch (e) {
+        const errorMessage = `Error getting crud item: ${e}`
         console.error(errorMessage)
         res.status(500).send({ error: errorMessage })
     }
