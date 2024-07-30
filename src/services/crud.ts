@@ -138,3 +138,7 @@ export async function updateCrudItem(params: EditCrudItemData) {
         }
     })
 }
+
+export async function deleteCrudItem(itemId: string) {
+    return CrudItems.findByIdAndDelete(itemId)
+}

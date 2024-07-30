@@ -7,13 +7,13 @@ import dotenv from 'dotenv'
 import {
     createCrud,
     createCrudItem,
+    deleteCrudItem,
     getCrudById,
     getCrudItem,
     getCrudItemList,
     getCrudList,
     updateCrudItem
 } from "./services/crud";
-import {Logger} from "concurrently";
 
 dotenv.config()
 
@@ -196,6 +196,21 @@ app.put('/crud/:crudId/item/:itemId', async (req, res: Response): Promise<void> 
 
   } catch (error) {
       const errorMessage = `Error updating crud item: ${error}`
+      console.error(errorMessage)
+      res.status(500).send({ error: errorMessage })
+  }
+})
+
+app.delete('/crud/item/:itemId', async (req, res: Response): Promise<void> => {
+  try {
+        const { itemId } = req.params
+        if (!itemId) {
+            throw new Error('Invalid body, itemId is required.')
+        }
+        const response = await deleteCrudItem(itemId)
+        res.status(200).send(response)
+  }  catch (e) {
+      const errorMessage = `Error deleting crud item: ${e}`
       console.error(errorMessage)
       res.status(500).send({ error: errorMessage })
   }
