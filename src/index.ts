@@ -180,17 +180,17 @@ app.post('/crud/:crudId/item', async (req, res: Response): Promise<void> => {
 app.put('/crud/:crudId/item/:itemId', async (req, res: Response): Promise<void> => {
   try {
       const { crudId, itemId } = req.params
-      const { item } = req.body || {}
+      const { fields } = req.body || {}
       if (!crudId || !itemId) {
           throw new Error('Invalid body, crudId and itemId is required.')
       }
-      if (!item) {
-          throw new Error('Invalid body, item is required.')
+      if (!fields || !fields.length) {
+          throw new Error('Invalid body, fields is required.')
       }
       const response = await updateCrudItem({
           crudId,
           itemId,
-          fieldData: item
+          fields
       })
       res.status(200).send(response)
 

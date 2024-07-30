@@ -99,16 +99,16 @@ export async function createCrudItem(data: CrudItemData) {
 interface EditCrudItemData {
     crudId: string
     itemId: string
-    fieldData: {
+    fields: {
         label: string
         value: string | number | boolean
         required?: boolean
         options?: any[]
-    }
+    }[]
 }
 
 export async function updateCrudItem(params: EditCrudItemData) {
-    const { crudId, itemId, fieldData } = params
+    const { crudId, itemId, fields } = params
 
     const crudData = await getCrudById(crudId)
     if (!crudData) {
@@ -120,11 +120,18 @@ export async function updateCrudItem(params: EditCrudItemData) {
         throw new Error(`Item with id ${itemId} not found`)
     }
 
+    const fieldsMap = new Map(fields.map(field => [field.label, field]))
+
     return item.updateOne({
         $set: {
             fields: item.fields.map((field: any) => {
-                if (field.label === fieldData.label) {
-                    field.value = fieldData.value
+                if (fieldsMap.has(field.label)) {
+                    const fieldData = fieldsMap.get(field.label)
+                    const { value, required, options, label } = fieldData!
+                    if (label) field.label = label
+                    if (value) field.value = value
+                    if (required) field.required = required
+                    if (options) field.options = options
                 }
                 return field
             })
