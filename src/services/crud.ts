@@ -32,19 +32,23 @@ export async function getCrudItemList(crudId: string, options?: GetCrudItemOptio
         throw new Error('Crud not found');
     }
 
-    const indexInfo = await CrudItems.collection.indexes();
+    if (search) {
+        const indexInfo = await CrudItems.collection.indexes();
 
-    const textIndexExists = indexInfo.some(index =>
-        index.key && index.key._fts === 'text' && (index.weights && index.weights['fields.value'] || index.weights && index.weights['fields.label'])
-    );
+        const textIndexExists = indexInfo.some(index =>
+            index.key && index.key._fts === 'text' && (index.weights && index.weights['fields.value'] || index.weights && index.weights['fields.label'])
+        );
 
-    if (!textIndexExists) {
-        try {
-            await CrudItems.collection.createIndex({ "fields.value": "text" });
-        } catch (error) {
-            throw error;
+        if (!textIndexExists) {
+            try {
+                await CrudItems.collection.createIndex({ "fields.value": "text" });
+            } catch (error) {
+                throw error;
+            }
         }
     }
+
+
 
     const searchFilter = search
         ? { crudId, $text: { $search: search } }
