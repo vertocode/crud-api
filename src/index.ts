@@ -227,7 +227,7 @@ app.delete('/crud/:crudId', async (req, res: Response): Promise<void> => {
   }  catch (e) {
         const errorMessage = `Error deleting crud: ${e}`
         console.error(errorMessage)
-        res.status(500).send({ error: errorMessage
+        res.status(500).send({ error: errorMessage })
   }
 })
 
