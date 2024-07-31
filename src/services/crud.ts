@@ -7,6 +7,21 @@ export async function createCrud(data: CrudType) {
     return Crud.create(data)
 }
 
+export async function deleteCrud(crudId: string) {
+    const crudObject = await Crud.findById(crudId) as unknown as CrudType
+
+    if (!crudObject) {
+        throw new Error('Crud not found')
+    }
+
+    const items = await CrudItems.find({ crudId })
+    items.forEach(item => item.deleteOne().catch(e => {
+        throw new Error(e)
+    }))
+
+    return Crud.findByIdAndDelete(crudId)
+}
+
 export async function getCrudById(crudId: string) {
     return Crud.findById(crudId)
 }

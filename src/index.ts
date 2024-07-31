@@ -6,7 +6,7 @@ import * as mongoose from "mongoose"
 import dotenv from 'dotenv'
 import {
     createCrud,
-    createCrudItem,
+    createCrudItem, deleteCrud,
     deleteCrudItem,
     getCrudById,
     getCrudItem,
@@ -213,6 +213,21 @@ app.delete('/crud/item/:itemId', async (req, res: Response): Promise<void> => {
       const errorMessage = `Error deleting crud item: ${e}`
       console.error(errorMessage)
       res.status(500).send({ error: errorMessage })
+  }
+})
+
+app.delete('/crud/:crudId', async (req, res: Response): Promise<void> => {
+  try {
+      const { crudId } = req.params
+        if (!crudId) {
+            throw new Error('Invalid body, crudId is required.')
+        }
+        const response = await deleteCrud(crudId)
+        res.status(200).send(response)
+  }  catch (e) {
+        const errorMessage = `Error deleting crud: ${e}`
+        console.error(errorMessage)
+        res.status(500).send({ error: errorMessage
   }
 })
 
