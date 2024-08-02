@@ -129,6 +129,33 @@ export async function createCrudItem(data: CrudItemData) {
     return CrudItems.create({ ...data, fields })
 }
 
+interface EditCrudData {
+    crudId: string
+    name: string
+    fields: {
+        label: string
+        type: string
+        required: boolean
+        options?: string[]
+    }[]
+}
+
+export async function updateCrud(params: EditCrudData) {
+    const { crudId, name, fields } = params
+
+    const crud = await getCrudById(crudId)
+    if (!crud) {
+        throw new Error(`CRUD with id ${crudId} not found`)
+    }
+
+    return crud.updateOne({
+        $set: {
+            name,
+            fields
+        }
+    })
+}
+
 interface EditCrudItemData {
     crudId: string
     itemId: string

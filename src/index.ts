@@ -11,7 +11,7 @@ import {
     getCrudById,
     getCrudItem,
     getCrudItemList,
-    getCrudList,
+    getCrudList, updateCrud,
     updateCrudItem
 } from "./services/crud";
 
@@ -199,6 +199,30 @@ app.put('/crud/:crudId/item/:itemId', async (req, res: Response): Promise<void> 
       console.error(errorMessage)
       res.status(500).send({ error: errorMessage })
   }
+})
+
+app.put('/crud/:crudId', async (req, res: Response): Promise<void> => {
+    try {
+        const { crudId } = req.params
+        const { fields, name } = req.body || {}
+        if (!crudId) {
+            throw new Error('Invalid body, crudId is required.')
+        }
+        if (!fields || !fields.length || !name) {
+            throw new Error('Invalid body, fields and name is required.')
+        }
+        const response = await updateCrud({
+            crudId,
+            fields,
+            name
+        })
+        res.status(200).send(response)
+
+    } catch (error) {
+        const errorMessage = `Error updating crud item: ${error}`
+        console.error(errorMessage)
+        res.status(500).send({ error: errorMessage })
+    }
 })
 
 app.delete('/crud/item/:itemId', async (req, res: Response): Promise<void> => {
