@@ -148,12 +148,39 @@ export async function updateCrud(params: EditCrudData) {
         throw new Error(`CRUD with id ${crudId} not found`)
     }
 
-    return crud.updateOne({
+    const response =  await crud.updateOne({
         $set: {
             name,
             fields
         }
     })
+
+    if (!response?.acknowledged) {
+        throw new Error('Acknowledged is false')
+    }
+
+    const items = await CrudItems.find({ crudId })
+
+    if (items && items.length) {
+        const labelsToUpdate = crud.fields.filter(field => !fields.some(f => f.label === field.label)).map(field => field.label)
+
+        await Promise.all(items.map(item => {
+            return item.updateOne({
+                $set: {
+                    fields: item.fields.map((field) => {
+                        if (labelsToUpdate.some(label => label === field.label)) {
+                            const fieldIndex = crud.fields.findIndex(f => f.label === field.label)
+                            return {
+                                ...field,
+                                label: fields[fieldIndex].label
+                            }
+                        }
+                        return field
+                    })
+                }
+            })
+        }))
+    }
 }
 
 interface EditCrudItemData {
